@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using Unity.VisualScripting;
 using UnityEditor.UI;
@@ -15,17 +16,20 @@ public class EnemyBase : MonoBehaviour
     /// updateInterval - a number of fixedUpdate calls. controls how often enemy samples player 
     ///     location and turns towards it
     /// </summary>
+
     [SerializeField]
     GameObject player;
     [SerializeField]
-    int updateInterval;
-    private int updateCounter = 10;
+    int updateInterval = 10;
+    [SerializeField]
+    int forceMultiplier = 1;
+    private int updateCounter;
     Rigidbody myBody;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        myBody = FindAnyObjectByType<Rigidbody>();
+        myBody = GetComponent<Rigidbody>();
         updateCounter = 0;
     }
 
@@ -39,8 +43,9 @@ public class EnemyBase : MonoBehaviour
     {
         if(updateCounter % updateInterval == 0)
         {
-           myBody.AddForce(player.transform.position - transform.position);
-           updateCounter = updateCounter % updateInterval;
+            UnityEngine.Vector3 force = player.transform.position - transform.position;
+            myBody.AddForce(force  * forceMultiplier);
+            updateCounter = updateCounter % updateInterval;
         }
         updateCounter++;
         
